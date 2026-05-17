@@ -1,50 +1,183 @@
 # Toxicity Prediction with XGBoost
 
-## Project Overview
-This notebook demonstrates a machine learning workflow for predicting chemical toxicity based on molecular properties. It utilizes the Tox21 dataset, which contains toxicity screening data for various compounds. The core of the prediction model is an XGBoost Classifier, augmented with molecular descriptors and atom counts as features.
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Jupyter Notebook](https://img.shields.io/badge/Notebook-Jupyter-orange.svg)](https://jupyter.org/)
 
-## Dataset
-The dataset used is `tox21.csv`, which contains information about chemical compounds, their SMILES strings, and their activity across various toxicity assays (NR-AR, NR-AR-LBD, etc.). A `toxicity_label` is derived from these assay results to indicate whether a compound is considered toxic (1) or non-toxic (0).
+A machine learning project for predicting chemical toxicity based on molecular properties using XGBoost and RDKit molecular descriptors on the Tox21 dataset.
 
-## Dependencies
-To run this notebook, you need the following Python libraries:
-- `pandas`
-- `numpy`
-- `xgboost`
-- `scikit-learn` (for `model_selection`, `metrics`, `impute`)
-- `pubchempy`
-- `rdkit`
-- `matplotlib`
-- `seaborn`
+## 📋 Project Overview
 
-These can be installed using pip:
+This notebook demonstrates a complete machine learning workflow for predicting chemical toxicity. It utilizes the Tox21 dataset, which contains toxicity screening data for various chemical compounds across multiple toxicity assays. The project achieves **92.53% accuracy** using XGBoost with engineered molecular descriptors.
+
+### Key Features:
+- Binary classification of toxic vs. non-toxic compounds
+- Feature engineering using RDKit molecular descriptors
+- Comprehensive model evaluation with ROC-AUC analysis
+- Feature importance visualization
+- Compound name retrieval using PubChemPy
+
+## 📊 Dataset
+
+The project uses the **Tox21 dataset** (`tox21.csv`) containing:
+- SMILES strings for chemical compounds
+- Activity data across multiple toxicity assays (NR-AR, NR-AR-LBD, NR-AhR, NR-Aromatase, etc.)
+- Binary toxicity labels indicating compound activity
+
+A compound is labeled as **toxic (1)** if it shows activity in any of the specified toxicity columns, otherwise **non-toxic (0)**.
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Python 3.8 or higher
+- pip or conda package manager
+- Jupyter Notebook or JupyterLab
+
+### Installation
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/pradeepkatikela/toxicty_prediction.git
+cd toxicty_prediction
+```
+
+2. **Install dependencies:**
+
+**Option 1: Using pip**
+```bash
+pip install -r requirements.txt
+```
+
+**Option 2: Manual installation**
 ```bash
 pip install pandas numpy xgboost scikit-learn pubchempy rdkit matplotlib seaborn
 ```
-(Note: `rdkit` might require specific installation steps depending on your environment. The `%pip install rdkit` command in the notebook usually works well in Colab).
 
-## Methodology
-1.  **Data Loading**: The `tox21.csv` file is loaded into a pandas DataFrame.
-2.  **Toxicity Labeling**: A binary `toxicity_label` is created. A compound is labeled `1` (toxic) if it shows activity (value `1`) in *any* of the specified toxicity columns, and `0` (non-toxic) if it shows inactivity (value `0`) in *any* of the columns and no activity in any other. Rows with ambiguous or entirely missing labels are dropped.
-3.  **Feature Engineering (RDKit Descriptors)**:
-    *   **Molecular Descriptors**: For each compound's SMILES string, molecular weight (MolWt), number of hydrogen bond donors (NumHDonors), hydrogen bond acceptors (NumHAcceptors), octanol-water partition coefficient (MolLogP), and topological polar surface area (TPSA) are calculated using RDKit's `Chem.Descriptors` module.
-    *   **Atom Counts**: Counts of Nitrogen (N), Oxygen (O), Halogens (Cl, Br, F, I), and Aromatic atoms are extracted.
-4.  **Feature Combination**: The generated molecular descriptors and atom counts are combined with the original toxicity assay columns to form the feature matrix `X_extra`.
-5.  **Missing Value Imputation**: `SimpleImputer` with a 'most_frequent' strategy is used to handle any remaining missing values in the feature set.
-6.  **Data Splitting**: The dataset is split into training and testing sets (80% train, 20% test) using `train_test_split` with stratification to maintain the class distribution.
-7.  **Noise Introduction (Optional)**: 5% random noise is intentionally introduced into the `y_train` labels to simulate real-world data challenges.
-8.  **Model Training**: An XGBoost Classifier (`xgb.XGBClassifier`) is trained on the noisy training data.
-9.  **Model Evaluation**: The trained model's performance is evaluated on the test set using:
-    *   Accuracy Score
-    *   Classification Report (precision, recall, f1-score)
-    *   Confusion Matrix
-    *   ROC Curve and Area Under the Curve (AUC)
-10. **Compound Name Retrieval**: PubChemPy is used to fetch common names for example toxic and non-toxic compounds based on their SMILES strings.
-11. **Feature Importance Visualization**: A bar plot visualizes the top 8 most important features as determined by the XGBoost model.
+> **Note:** `rdkit` might require specific installation steps depending on your environment. For Google Colab, use `%pip install rdkit` directly in a cell.
 
-## Results and Findings
-The XGBoost model achieved a promising accuracy of **92.53%** on the test set. The classification report and confusion matrix provide a detailed breakdown of precision, recall, and F1-score for both 'Non-Toxic' and 'Toxic' classes. The ROC AUC score further confirms the model's ability to distinguish between the two classes.
+### Running the Project
 
-Key observations from the feature importance plot suggest that several original toxicity assays (e.g., `NR-ER`, `SR-ATAD5`) along with molecular descriptors like `MolWt` and `LogP`, and atom counts such as `Aromatic_count` and `O_count`, are crucial for predicting toxicity.
+1. **Start Jupyter Notebook:**
+```bash
+jupyter notebook
+```
 
-The examples of predicted toxic and non-toxic compounds, along with their PubChem names, offer qualitative insights into the model's predictions.
+2. **Open the notebook:**
+   - Open `toxicity_prediction.ipynb` in your browser
+   - Run cells sequentially from top to bottom
+   - Ensure the `tox21.csv` dataset file is in the same directory
+
+## 🔧 Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| `pandas` | Data manipulation and analysis |
+| `numpy` | Numerical computing |
+| `xgboost` | XGBoost classifier model |
+| `scikit-learn` | ML utilities (train/test split, metrics, imputation) |
+| `pubchempy` | Fetch compound names from PubChem |
+| `rdkit` | Molecular descriptor calculation |
+| `matplotlib` | Data visualization |
+| `seaborn` | Statistical data visualization |
+
+## 🔬 Methodology
+
+### 1. **Data Loading**
+   - Load the `tox21.csv` file into a pandas DataFrame
+
+### 2. **Toxicity Labeling**
+   - Create binary `toxicity_label`: 1 if compound is active in any assay, 0 otherwise
+
+### 3. **Feature Engineering**
+   - **Molecular Descriptors:**
+     - Molecular Weight (MolWt)
+     - Hydrogen Bond Donors (NumHDonors)
+     - Hydrogen Bond Acceptors (NumHAcceptors)
+     - LogP (Octanol-water partition coefficient)
+     - Number of Rotatable Bonds
+   - **Atom Counts:** N, O, Halogens (Cl, Br, F, I), Aromatic atoms
+
+### 4. **Data Preprocessing**
+   - Combine molecular descriptors with original toxicity assay columns
+   - Handle missing values using SimpleImputer (most_frequent strategy)
+   - Split data: 80% training, 20% testing (stratified)
+
+### 5. **Model Training**
+   - Introduce 5% random noise in training labels (simulates real-world challenges)
+   - Train XGBoost Classifier on noisy training data
+
+### 6. **Model Evaluation**
+   - Accuracy Score
+   - Classification Report (Precision, Recall, F1-Score)
+   - Confusion Matrix
+   - ROC Curve and AUC
+
+### 7. **Visualization**
+   - Feature Importance plot (top 8 features)
+   - ROC curve visualization
+   - Example predictions with PubChem compound names
+
+## 📈 Results and Findings
+
+### Model Performance
+- **Accuracy:** 92.53% on test set
+- **Key Features:** NR-ER, SR-ATAD5, MolWt, LogP, atom counts
+
+### Key Observations
+- Original toxicity assays are strong predictors of overall toxicity
+- Molecular descriptors (MolWt, LogP) provide valuable signal
+- Atom composition features contribute to model predictions
+- The model generalizes well with stratified train-test split
+
+### Insights
+- Example predictions demonstrate the model's ability to identify toxic and non-toxic compounds
+- PubChem compound name retrieval provides qualitative validation of predictions
+
+## 📂 File Structure
+
+```
+toxicty_prediction/
+├── README.md                      # Project documentation
+├── requirements.txt               # Python dependencies
+├── .gitignore                    # Git ignore file
+├── toxicity_prediction.ipynb     # Main Jupyter notebook
+├── tox21.csv                     # Dataset (add separately)
+└── LICENSE                       # MIT License
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to:
+- Report bugs or issues
+- Suggest improvements or new features
+- Submit pull requests
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 👤 Author
+
+**Pradeep Katikela**
+- GitHub: [@pradeepkatikela](https://github.com/pradeepkatikela)
+
+## 🙏 Acknowledgments
+
+- **Tox21 Dataset:** National Center for Advancing Translational Sciences (NCATS)
+- **Libraries:** Pandas, Scikit-learn, XGBoost, RDKit, Matplotlib, Seaborn
+- **Tools:** Jupyter Notebook, Python 3.8+
+
+## 📚 References
+
+- [Tox21 Challenge Data](https://tripod.nih.gov/tox21/challenge/)
+- [XGBoost Documentation](https://xgboost.readthedocs.io/)
+- [RDKit Documentation](https://www.rdkit.org/docs/)
+- [Scikit-learn Documentation](https://scikit-learn.org/)
+
+## ❓ Questions or Issues?
+
+If you have any questions or encounter issues, please open an [issue](https://github.com/pradeepkatikela/toxicty_prediction/issues) on GitHub.
+
+---
+
+**Last Updated:** May 2026
